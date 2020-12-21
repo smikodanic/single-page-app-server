@@ -54,7 +54,8 @@ class SPAServer {
         jpg: 'image/jpeg',
         png: 'image/png',
         svg: 'image/svg+xml',
-        js: 'application/javascript'
+        js: 'application/javascript',
+        mp4: 'video/mp4'
       };
       let contentType = mime.html;
       let encoding = 'utf8';
@@ -67,6 +68,7 @@ class SPAServer {
       else if (/jpg|jpeg/.test(fileExt)) { contentType = mime.jpg; encoding = 'binary';  }
       else if (/svg/.test(fileExt)) { contentType = mime.svg; encoding = 'binary';  }
       else if (/js/.test(fileExt)) { contentType = mime.js; encoding = 'utf8';  }
+      else if (/mp4/.test(fileExt)) { contentType = mime.mp4; encoding = 'binary';  }
 
 
       const filePath = path.join(process.cwd(), this.opts.staticDir, reqFile);
