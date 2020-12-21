@@ -36,15 +36,6 @@ class SPAServer {
     // start HTTP Server
     this.httpServer = http.createServer((req, res) => {
 
-      // requested file path
-      let reqFile;
-      if (req.url === '/') { // root request
-        reqFile = this.opts.indexFile || 'index.html';
-      } else { // if there's file extension for example /some.js or /some/thing.css
-        reqFile = req.url;
-      }
-
-
       // define Content-Type header and encoding according to file extension
       const mime = {
         html: 'text/html',
@@ -59,7 +50,7 @@ class SPAServer {
       };
       let contentType = mime.html;
       let encoding = 'utf8';
-      const matched = reqFile.match(/\.(.+)$/i);
+      const matched = req.url.match(/\.(.+)$/i);
       const fileExt = !!matched ? matched[1] : ''; // html, txt, css, js, png, ...
       if (/html|htm/.test(fileExt)) { contentType = mime.html; encoding = 'utf8'; }
       else if (/txt/.test(fileExt)) { contentType = mime.txt; encoding = 'utf8';  }
@@ -70,6 +61,14 @@ class SPAServer {
       else if (/js/.test(fileExt)) { contentType = mime.js; encoding = 'utf8';  }
       else if (/mp4/.test(fileExt)) { contentType = mime.mp4; encoding = 'binary';  }
 
+
+      // requested file path
+      let reqFile;
+      if (!fileExt) { // if request doesn't contain file extension, for example / or /some/thing/
+        reqFile = this.opts.indexFile || 'index.html';
+      } else { // if there's file extension for example /some.js or /some/thing.css
+        reqFile = req.url;
+      }
 
       const filePath = path.join(process.cwd(), this.opts.staticDir, reqFile);
 
@@ -90,24 +89,29 @@ class SPAServer {
         } catch (err) {
           console.log(err);
         }
-      } else {
+      } else { // file doesn't exist
         res.writeHead(404);
         const errMsg = `NOT FOUND: "${filePath}"`;
         console.log(errMsg);
-        res.end(errMsg);
       }
 
     });
+
+
 
     // configure HTTP Server
     this.httpServer.listen(this.opts.port);
     this.httpServer.timeout = this.opts.timeout;
 
+
     // listen for server events
     this.events();
 
+
     return this.httpServer;
   }
+
+
 
 
   /**
@@ -117,6 +121,8 @@ class SPAServer {
     await new Promise(resolve => setTimeout(resolve, 2100));
     this.httpServer.close();
   }
+
+
 
 
   /**
@@ -184,6 +190,8 @@ class SPAServer {
     });
 
   }
+
+
 
 }
 
