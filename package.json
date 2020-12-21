@@ -1,10 +1,9 @@
 {
   "name": "single-page-app-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Single Page App SPA HTTP server.",
   "main": "server/index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/smikodanic/single-page-app-server.git"
