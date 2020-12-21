@@ -19,6 +19,7 @@ class SPAServer {
       if (!this.opts.port) { throw new Error('The server port is not defined.'); }
       else if (this.opts.timeout === undefined) { this.opts.timeout = 5*60*1000; }
       else if (!this.opts.staticDir) { throw new Error('Parameter "staticDir" is not defined.'); }
+      else if (!this.opts.headers) { this.opts.headers = []; }
     } else {
       throw new Error('HTTP options are not defined.');
     }
@@ -84,35 +85,44 @@ class SPAServer {
 
       if (fs.existsSync(filePath)) {
         try {
-          res.writeHead(200, {'Content-Type': contentType });
-          const raw = fs.createReadStream(filePath);
+
+          /*** A) set headers defined in the opts ***/
+          const headerProps = Object.keys(this.opts.headers);
+          for (const headerProp of headerProps) {
+            res.setHeader(headerProp, this.opts.headers[headerProp]);
+            // console.log(headerProp, this.opts.headers[headerProp]);
+          }
+          res.setHeader('Content-Type', contentType);
 
 
+
+          /*** B) compress response ***/
           let acceptEncodingBrowser = req.headers['accept-encoding']; // defines what browser can accept
           if (!acceptEncodingBrowser) { acceptEncodingBrowser = ''; }
 
+          const raw = fs.createReadStream(filePath);
 
           // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
           if (acceptEncodingBrowser.match(/\bgzip\b/) && this.opts.acceptEncoding === 'gzip') {
-            res.writeHead(200, { 'content-encoding': 'gzip' });
+            res.writeHead(200, { 'Content-Encoding': 'gzip' });
             raw.pipe(zlib.createGzip()).pipe(res);
           } else if (acceptEncodingBrowser.match(/\bdeflate\b/) && this.opts.acceptEncoding === 'deflate') {
-            res.writeHead(200, { 'content-encoding': 'deflate' });
+            res.writeHead(200, { 'Content-Encoding': 'deflate' });
             raw.pipe(zlib.createDeflate()).pipe(res);
           } else {
-            res.writeHead(200, {});
+            res.writeHead(200);
             raw.pipe(res);
           }
 
 
-          // const content = fs.readFileSync(filePath, 'utf8');
-          // res.end(content, encoding);
         } catch (err) {
           console.log(err);
         }
+
+
       } else { // file doesn't exist
-        res.writeHead(404);
         const errMsg = `NOT FOUND: "${filePath}"`;
+        res.writeHead(404, {'X-Error': errMsg});
         console.log(errMsg);
       }
 
