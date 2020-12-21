@@ -1,0 +1,31 @@
+{
+  "name": "single-page-app-server",
+  "version": "1.0.0",
+  "description": "Single Page App SPA HTTP server.",
+  "main": "server/index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/smikodanic/single-page-app-server.git"
+  },
+  "keywords": [
+    "spa",
+    "HTTP",
+    "server",
+    "single",
+    "page",
+    "app",
+    "static",
+    "files",
+    "angular",
+    "vue",
+    "react"
+  ],
+  "author": "Sasa Mikodanic <smikodanic@gmail.com>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/smikodanic/single-page-app-server/issues"
+  },
+  "homepage": "https://github.com/smikodanic/single-page-app-server#readme"
+}
