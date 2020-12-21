@@ -73,10 +73,13 @@ class SPAServer {
 
       const filePath = path.join(process.cwd(), this.opts.staticDir, reqFile);
 
-      console.log('\n\nreq.url:: ', req.url);
-      console.log('reqFile:: ', reqFile);
-      console.log('fileExt:: ', fileExt, ' contentType:: ', contentType, ' encoding:: ', encoding);
-      console.log('filePath:: ', filePath);
+      if (this.opts.debug) {
+        console.log('\n\nreq.url:: ', req.url);
+        console.log('reqFile:: ', reqFile);
+        console.log('fileExt:: ', fileExt, ' contentType:: ', contentType, ' encoding:: ', encoding);
+        console.log('filePath:: ', filePath);
+      }
+
 
       if (fs.existsSync(filePath)) {
         try {
