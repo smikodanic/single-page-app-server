@@ -24,9 +24,9 @@ spaServer.start();
 
 
 ## API
-**start(): void** - start the HTTP server
-**stop(): void** - stop the HTTP server
-**restart(): void** - restart the HTTP server
+- **start(): void** - start the HTTP server
+- **stop(): void** - stop the HTTP server
+- **restart(): void** - restart the HTTP server
 
 
 ## todo
