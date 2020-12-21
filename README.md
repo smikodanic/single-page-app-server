@@ -16,7 +16,8 @@ const opts = {
   timeout: 1000,
   staticDir: 'dist', // directory with static files (absolute path)
   indexFile: 'page.html', // root file in the staticDirAbsPath
-  debug: false
+  acceptEncoding: 'gzip', // gzip, deflate or ''
+  debug: true // show debug message in the terminal (useful for developers)
 };
 
 const spaServer = new SPAserver(opts);
@@ -29,10 +30,6 @@ spaServer.start();
 - **stop(): void** - stop the HTTP server
 - **restart(): void** - restart the HTTP server
 
-
-## todo
-- gzip
-- CORS
 
 
 ### Licence

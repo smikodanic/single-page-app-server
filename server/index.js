@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 
 
 /**
@@ -77,13 +78,33 @@ class SPAServer {
         console.log('reqFile:: ', reqFile);
         console.log('fileExt:: ', fileExt, ' contentType:: ', contentType, ' encoding:: ', encoding);
         console.log('filePath:: ', filePath);
+        console.log('acceptEncoding:: ', this.opts.acceptEncoding);
       }
 
 
       if (fs.existsSync(filePath)) {
         try {
           res.writeHead(200, {'Content-Type': contentType });
-          fs.createReadStream(filePath).pipe(res);
+          const raw = fs.createReadStream(filePath);
+
+
+          let acceptEncodingBrowser = req.headers['accept-encoding']; // defines what browser can accept
+          if (!acceptEncodingBrowser) { acceptEncodingBrowser = ''; }
+
+
+          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+          if (acceptEncodingBrowser.match(/\bgzip\b/) && this.opts.acceptEncoding === 'gzip') {
+            res.writeHead(200, { 'content-encoding': 'gzip' });
+            raw.pipe(zlib.createGzip()).pipe(res);
+          } else if (acceptEncodingBrowser.match(/\bdeflate\b/) && this.opts.acceptEncoding === 'deflate') {
+            res.writeHead(200, { 'content-encoding': 'deflate' });
+            raw.pipe(zlib.createDeflate()).pipe(res);
+          } else {
+            res.writeHead(200, {});
+            raw.pipe(res);
+          }
+
+
           // const content = fs.readFileSync(filePath, 'utf8');
           // res.end(content, encoding);
         } catch (err) {

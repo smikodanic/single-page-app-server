@@ -5,6 +5,7 @@ const opts = {
   timeout: 1000,
   staticDir: 'dist', // directory with static files (absolute path)
   indexFile: 'page.html', // root file in the staticDirAbsPath
+  acceptEncoding: 'gzip', // gzip, deflate or ''
   debug: true
 };
 
