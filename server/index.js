@@ -60,7 +60,7 @@ class SPAServer {
       let contentType = mime.html;
       let encoding = 'utf8';
       const matched = reqFile.match(/\.(.+)$/i);
-      const fileExt = matched[1]; // html, txt, css, js, png, ...
+      const fileExt = !!matched ? matched[1] : ''; // html, txt, css, js, png, ...
       if (/html|htm/.test(fileExt)) { contentType = mime.html; encoding = 'utf8'; }
       else if (/txt/.test(fileExt)) { contentType = mime.txt; encoding = 'utf8';  }
       else if (/css/.test(fileExt)) { contentType = mime.css; encoding = 'utf8';  }
