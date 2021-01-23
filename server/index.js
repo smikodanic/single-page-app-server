@@ -46,9 +46,13 @@ class SPAServer {
         gif: 'image/gif',
         jpg: 'image/jpeg',
         png: 'image/png',
+        ico: 'image/x-icon',
         svg: 'image/svg+xml',
         js: 'application/javascript',
-        mp4: 'video/mp4'
+        mp4: 'video/mp4',
+        woff: 'font/woff',
+        woff2: 'font/woff2',
+        ttf: 'font/ttf',
       };
       let contentType = mime.html;
       let encoding = 'utf8';
@@ -60,8 +64,13 @@ class SPAServer {
       else if (/gif/.test(fileExt)) { contentType = mime.gif; encoding = 'binary';  }
       else if (/jpg|jpeg/.test(fileExt)) { contentType = mime.jpg; encoding = 'binary';  }
       else if (/svg/.test(fileExt)) { contentType = mime.svg; encoding = 'binary';  }
+      else if (/png/.test(fileExt)) { contentType = mime.png; encoding = 'binary';  }
+      else if (/ico/.test(fileExt)) { contentType = mime.png; encoding = 'binary';  }
       else if (/js/.test(fileExt)) { contentType = mime.js; encoding = 'utf8';  }
       else if (/mp4/.test(fileExt)) { contentType = mime.mp4; encoding = 'binary';  }
+      else if (/woff/.test(fileExt)) { contentType = mime.woff; encoding = 'binary';  }
+      else if (/woff2/.test(fileExt)) { contentType = mime.woff2; encoding = 'binary';  }
+      else if (/ttf/.test(fileExt)) { contentType = mime.ttf; encoding = 'binary';  }
 
 
       // requested file path
@@ -72,12 +81,14 @@ class SPAServer {
         reqFile = req.url;
       }
 
-      const filePath = path.join(process.cwd(), this.opts.staticDir, reqFile);
+      const filePathOrig = path.join(process.cwd(), this.opts.staticDir, reqFile);
+      const filePath = filePathOrig.replace(/\?.+/, ''); // remove URL query for example ?v=4.7.0
 
       if (this.opts.debug) {
         console.log('\n\nreq.url:: ', req.url);
         console.log('reqFile:: ', reqFile);
         console.log('fileExt:: ', fileExt, ' contentType:: ', contentType, ' encoding:: ', encoding);
+        console.log('filePathOrig:: ', filePathOrig);
         console.log('filePath:: ', filePath);
         console.log('acceptEncoding:: ', this.opts.acceptEncoding);
       }
@@ -90,7 +101,6 @@ class SPAServer {
           const headerProps = Object.keys(this.opts.headers);
           for (const headerProp of headerProps) {
             res.setHeader(headerProp, this.opts.headers[headerProp]);
-            // console.log(headerProp, this.opts.headers[headerProp]);
           }
           res.setHeader('Content-Type', contentType);
 
