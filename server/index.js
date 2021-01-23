@@ -124,6 +124,7 @@ class SPAServer {
         const errMsg = `NOT FOUND: "${filePath}"`;
         res.writeHead(404, {'X-Error': errMsg});
         console.log(errMsg);
+        res.end();
       }
 
     });
