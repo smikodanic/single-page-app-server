@@ -38,6 +38,8 @@ class SPAServer {
     // start HTTP Server
     this.httpServer = http.createServer((req, res) => {
 
+      const urlNoQuery = req.url.replace(/\?.+/, ''); // uRL where query is removed, for example for example ?v=4.7.0
+
       // define Content-Type header and encoding according to file extension
       const mime = {
         html: 'text/html',
@@ -53,24 +55,33 @@ class SPAServer {
         woff: 'font/woff',
         woff2: 'font/woff2',
         ttf: 'font/ttf',
+        js_map: 'application/json',
+        css_map: 'application/octet-stream',
       };
       let contentType = mime.html;
       let encoding = 'utf8';
-      const matched = req.url.match(/\.(.+)$/i);
+      const matched = urlNoQuery.match(/\.([^.]+)$/i);
+      const matched2 = urlNoQuery.match(/\.([^.]+)\.[^.]+$/i);
+      // const matched = urlNoQuery.match(/\.(.+)$/i);
       const fileExt = !!matched ? matched[1] : ''; // html, txt, css, js, png, ...
-      if (/html|htm/.test(fileExt)) { contentType = mime.html; encoding = 'utf8'; }
-      else if (/txt/.test(fileExt)) { contentType = mime.txt; encoding = 'utf8';  }
-      else if (/css/.test(fileExt)) { contentType = mime.css; encoding = 'utf8';  }
-      else if (/gif/.test(fileExt)) { contentType = mime.gif; encoding = 'binary';  }
-      else if (/jpg|jpeg/.test(fileExt)) { contentType = mime.jpg; encoding = 'binary';  }
-      else if (/svg/.test(fileExt)) { contentType = mime.svg; encoding = 'binary';  }
-      else if (/png/.test(fileExt)) { contentType = mime.png; encoding = 'binary';  }
-      else if (/ico/.test(fileExt)) { contentType = mime.png; encoding = 'binary';  }
-      else if (/js/.test(fileExt)) { contentType = mime.js; encoding = 'utf8';  }
-      else if (/mp4/.test(fileExt)) { contentType = mime.mp4; encoding = 'binary';  }
-      else if (/woff/.test(fileExt)) { contentType = mime.woff; encoding = 'binary';  }
-      else if (/woff2/.test(fileExt)) { contentType = mime.woff2; encoding = 'binary';  }
-      else if (/ttf/.test(fileExt)) { contentType = mime.ttf; encoding = 'binary';  }
+      const fileExt2 = !!matched2 ? matched2[1] : ''; // on js.map or css.map
+      if (/^html$/.test(fileExt)) { contentType = mime.html; encoding = 'utf8'; }
+      else if (/^htm$/.test(fileExt)) { contentType = mime.html; encoding = 'utf8'; }
+      else if (/^txt$/.test(fileExt)) { contentType = mime.txt; encoding = 'utf8';  }
+      else if (/^css$/.test(fileExt)) { contentType = mime.css; encoding = 'utf8';  }
+      else if (/^gif$/.test(fileExt)) { contentType = mime.gif; encoding = 'binary';  }
+      else if (/^jpg$/.test(fileExt)) { contentType = mime.jpg; encoding = 'binary';  }
+      else if (/^jpeg$/.test(fileExt)) { contentType = mime.jpg; encoding = 'binary';  }
+      else if (/^svg$/.test(fileExt)) { contentType = mime.svg; encoding = 'binary';  }
+      else if (/^png$/.test(fileExt)) { contentType = mime.png; encoding = 'binary';  }
+      else if (/^ico$/.test(fileExt)) { contentType = mime.ico; encoding = 'binary';  }
+      else if (/^js$/.test(fileExt)) { contentType = mime.js; encoding = 'utf8';  }
+      else if (/^mp4$/.test(fileExt)) { contentType = mime.mp4; encoding = 'binary';  }
+      else if (/^woff$/.test(fileExt)) { contentType = mime.woff; encoding = 'binary';  }
+      else if (/^woff2$/.test(fileExt)) { contentType = mime.woff2; encoding = 'binary';  }
+      else if (/^ttf$/.test(fileExt)) { contentType = mime.ttf; encoding = 'binary';  }
+      else if (/^map$/.test(fileExt) && /^css$/.test(fileExt2)) { contentType = mime.js_map; encoding = 'utf8';  }
+      else if (/^map$/.test(fileExt) && /^js$/.test(fileExt2)) { contentType = mime.css_map; encoding = 'utf8';  }
 
 
       // requested file path
@@ -78,7 +89,7 @@ class SPAServer {
       if (!fileExt) { // if request doesn't contain file extension, for example / or /some/thing/
         reqFile = this.opts.indexFile || 'index.html';
       } else { // if there's file extension for example /some.js or /some/thing.css
-        reqFile = req.url;
+        reqFile = urlNoQuery;
       }
 
       const filePathOrig = path.join(process.cwd(), this.opts.staticDir, reqFile);
@@ -86,8 +97,9 @@ class SPAServer {
 
       if (this.opts.debug) {
         console.log('\n\nreq.url:: ', req.url);
+        console.log('urlNoQuery:: ', urlNoQuery);
         console.log('reqFile:: ', reqFile);
-        console.log('fileExt:: ', fileExt, ' contentType:: ', contentType, ' encoding:: ', encoding);
+        console.log('fileExt::', fileExt, 'fileExt2::', fileExt2, ' contentType::', contentType, ' encoding::', encoding);
         console.log('filePathOrig:: ', filePathOrig);
         console.log('filePath:: ', filePath);
         console.log('acceptEncoding:: ', this.opts.acceptEncoding);
